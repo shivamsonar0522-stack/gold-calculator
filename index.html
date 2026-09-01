@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gold Taka Calculator</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;
+background:#f7f1df;color:#2d2414}.card{max-width:520px;margin:20px auto;
+padding:24px;background:#fff;border-radius:20px;box-shadow:0 8px 30px #0002}
+h1{text-align:center;color:#9a6b00;margin:0 0 8px}.sub{text-align:center;
+color:#666;margin-bottom:20px}label{display:block;font-weight:bold;margin:14px 0 6px}
+input{width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px}
+button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:12px;
+background:#c99718;color:#fff;font-size:17px;font-weight:bold}.result{margin-top:22px;
+padding:18px;border-radius:14px;background:#fff8df}.row{display:flex;
+justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #eadfbf}
+.big{font-size:24px;color:#8b6100}.error{color:#b00020;margin-top:12px;font-weight:bold}
+.note{margin-top:15px;font-size:13px;color:#666;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🪙 Gold Taka Calculator</h1>
+<div class="sub">Final jewellery purity ka hisaab</div>
+
+<label>कुल तैयार वजन (ग्राम)</label>
+<input id="weight" type="number" step="0.001" value="10">
+
+<label>मुख्य सोने की purity (%)</label>
+<input id="base" type="number" step="0.01" value="90">
+
+<label>टाँके में gold (%)</label>
+<input id="sGold" type="number" step="0.01" value="30">
+
+<label>टाँके के gold की purity (%)</label>
+<input id="sPurity" type="number" step="0.01" value="90">
+
+<label>Final jewellery purity (%)</label>
+<input id="target" type="number" step="0.01" value="70">
+
+<button onclick="calc()">हिसाब निकालें</button>
+<div id="err" class="error"></div>
+<div id="out" class="result" style="display:none">
+<div class="row"><span>टाँके की effective purity</span><b id="eff"></b></div>
+<div class="row"><span>मुख्य gold</span><b id="main"></b></div>
+<div class="row"><span>टाँका</span><b id="solder" class="big"></b></div>
+<div class="row"><span>कुल वजन</span><b id="total"></b></div>
+<div class="row"><span>Final purity</span><b id="final"></b></div>
+<div class="note">
+Effective solder purity = टाँके में gold % × उस gold की purity %.
+</div>
+</div>
+</div>
+
+<script>
+function n(id){return parseFloat(document.getElementById(id).value)}
+function g(x){return x.toFixed(3)+" g"}
+function calc(){
+  const w=n("weight"), b=n("base")/100, sg=n("sGold")/100;
+  const sp=n("sPurity")/100, t=n("target")/100;
+  const err=document.getElementById("err");
+  const out=document.getElementById("out");
+  err.textContent=""; out.style.display="none";
+  if(![w,b,sg,sp,t].every(Number.isFinite)||w<=0){
+    err.textContent="सभी values सही भरें।"; return;
+  }
+  const e=sg*sp;
+  if(t>=b||t<=e){
+    err.textContent="Final purity मुख्य gold और solder की effective purity के बीच रखें.";
+    return;
+  }
+  const solder=w*(b-t)/(b-e);
+  const main=w-solder;
+  const actual=(main*b+solder*e)/w;
+  document.getElementById("eff").textContent=(e*100).toFixed(2)+"%";
+  document.getElementById("main").textContent=g(main);
+  document.getElementById("solder").textContent=g(solder);
+  document.getElementById("total").textContent=g(w);
+  document.getElementById("final").textContent=(actual*100).toFixed(2)+"%";
+  out.style.display="block";
+}
+calc();
+</script>
+</body>
+</html>
